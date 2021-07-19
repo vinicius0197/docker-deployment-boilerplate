@@ -1,0 +1,22 @@
+sudo: required
+services:
+ - docker
+
+ before_install:
+  - docker build -t viniciuscosta/react-docker-deployment -f ./client/Dockerfile.dev ./client
+  
+script:
+  - docker run viniciuscosta/react-docker-deployment npm test -- --coverage
+
+after_success:
+  - docker build -t viniciuscosta/multi-client ./client
+  - docker build -t viniciuscosta/multi-nginx ./nginx
+  - docker build -t viniciuscosta/multi-server ./server
+  - docker build -t viniciuscosta/multi-worker ./server
+  # Log in to docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # Take image and push to docker hub
+  - docker push viniciuscosta/multi-client
+  - docker push viniciuscosta/multi-nginx
+  - docker push viniciuscosta/multi-server
+  - docker push viniciuscosta/multi-worker
