@@ -6,7 +6,7 @@ before_install:
   - docker build -t viniciuscosta/react-docker-deployment -f ./client/Dockerfile.dev ./client
 
 script:
-  - docker run viniciuscosta/react-docker-deployment npm test -- --coverage
+  - docker run -e CI=true viniciuscosta/react-docker-deployment npm test -- --coverage
 
 after_success:
   - docker build -t viniciuscosta/multi-client ./client
